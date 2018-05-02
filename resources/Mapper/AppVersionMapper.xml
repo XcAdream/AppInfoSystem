@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jbit.dao.AppVersionMapper" >
+  <resultMap id="BaseResultMap" type="com.jbit.entity.AppVersion" >
+    <id column="id" property="id" jdbcType="BIGINT" />
+    <result column="appId" property="appid" jdbcType="BIGINT" />
+    <result column="versionNo" property="versionno" jdbcType="VARCHAR" />
+    <result column="versionInfo" property="versioninfo" jdbcType="VARCHAR" />
+    <result column="publishStatus" property="publishstatus" jdbcType="BIGINT" />
+    <result column="downloadLink" property="downloadlink" jdbcType="VARCHAR" />
+    <result column="versionSize" property="versionsize" jdbcType="DECIMAL" />
+    <result column="createdBy" property="createdby" jdbcType="BIGINT" />
+    <result column="creationDate" property="creationdate" jdbcType="TIMESTAMP" />
+    <result column="modifyBy" property="modifyby" jdbcType="BIGINT" />
+    <result column="modifyDate" property="modifydate" jdbcType="TIMESTAMP" />
+    <result column="apkLocPath" property="apklocpath" jdbcType="VARCHAR" />
+    <result column="apkFileName" property="apkfilename" jdbcType="VARCHAR" />
+    <result column="publishstatusname" property="publishstatusname" jdbcType="VARCHAR" />
+    <result column="appname" property="appname" jdbcType="VARCHAR" />
+  </resultMap>
+  <sql id="Base_Column_List" >
+    id, appId, versionNo, versionInfo, publishStatus, downloadLink, versionSize, createdBy, 
+    creationDate, modifyBy, modifyDate, apkLocPath, apkFileName
+  </sql>
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Long" >
+    select 
+    <include refid="Base_Column_List" />
+    from app_version
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <select id="findAppVersionOne" resultType="com.jbit.entity.AppVersion">
+    select * from app_version where id=#{vid}
+  </select>
+
+  <select id="findAppVersion" resultMap="BaseResultMap">
+    SELECT v.*,
+    (SELECT softwareName FROM app_info a WHERE v.appid=a.id) AS appname,
+    (SELECT valuename FROM data_dictionary d WHERE v.publishstatus=d.valueid AND d.typecode="PUBLISH_STATUS") AS publishstatusname
+    FROM app_version v WHERE appid=#{id}
+  </select>
+  <select id="findAppVersionlast" resultType="com.jbit.entity.AppVersion">
+    SELECT * FROM app_version ORDER BY id DESC LIMIT 1
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long" >
+    delete from app_version
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteAppversion">
+    delete from app_version where appid=#{id}
+  </delete>
+  <insert id="insertAppVersion" parameterType="com.jbit.entity.AppVersion" >
+    insert into app_version (id, appId, versionNo, 
+      versionInfo, publishStatus, downloadLink, 
+      versionSize, createdBy, creationDate, 
+      modifyBy, modifyDate, apkLocPath, 
+      apkFileName)
+    values (default,#{appid},#{versionno},#{versioninfo},#{publishstatus},#{downloadlink},
+    #{versionsize},#{createdby},now(),null,null,#{apklocpath},#{apkfilename})
+  </insert>
+  <insert id="insertSelective" parameterType="com.jbit.entity.AppVersion" >
+    insert into app_version
+    <trim prefix="(" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        id,
+      </if>
+      <if test="appid != null" >
+        appId,
+      </if>
+      <if test="versionno != null" >
+        versionNo,
+      </if>
+      <if test="versioninfo != null" >
+        versionInfo,
+      </if>
+      <if test="publishstatus != null" >
+        publishStatus,
+      </if>
+      <if test="downloadlink != null" >
+        downloadLink,
+      </if>
+      <if test="versionsize != null" >
+        versionSize,
+      </if>
+      <if test="createdby != null" >
+        createdBy,
+      </if>
+      <if test="creationdate != null" >
+        creationDate,
+      </if>
+      <if test="modifyby != null" >
+        modifyBy,
+      </if>
+      <if test="modifydate != null" >
+        modifyDate,
+      </if>
+      <if test="apklocpath != null" >
+        apkLocPath,
+      </if>
+      <if test="apkfilename != null" >
+        apkFileName,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides="," >
+      <if test="id != null" >
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="appid != null" >
+        #{appid,jdbcType=BIGINT},
+      </if>
+      <if test="versionno != null" >
+        #{versionno,jdbcType=VARCHAR},
+      </if>
+      <if test="versioninfo != null" >
+        #{versioninfo,jdbcType=VARCHAR},
+      </if>
+      <if test="publishstatus != null" >
+        #{publishstatus,jdbcType=BIGINT},
+      </if>
+      <if test="downloadlink != null" >
+        #{downloadlink,jdbcType=VARCHAR},
+      </if>
+      <if test="versionsize != null" >
+        #{versionsize,jdbcType=DECIMAL},
+      </if>
+      <if test="createdby != null" >
+        #{createdby,jdbcType=BIGINT},
+      </if>
+      <if test="creationdate != null" >
+        #{creationdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyby != null" >
+        #{modifyby,jdbcType=BIGINT},
+      </if>
+      <if test="modifydate != null" >
+        #{modifydate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apklocpath != null" >
+        #{apklocpath,jdbcType=VARCHAR},
+      </if>
+      <if test="apkfilename != null" >
+        #{apkfilename,jdbcType=VARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.jbit.entity.AppVersion" >
+    update app_version
+    <set >
+      <if test="appid != null" >
+        appId = #{appid,jdbcType=BIGINT},
+      </if>
+      <if test="versionno != null" >
+        versionNo = #{versionno,jdbcType=VARCHAR},
+      </if>
+      <if test="versioninfo != null" >
+        versionInfo = #{versioninfo,jdbcType=VARCHAR},
+      </if>
+      <if test="publishstatus != null" >
+        publishStatus = #{publishstatus,jdbcType=BIGINT},
+      </if>
+      <if test="downloadlink != null" >
+        downloadLink = #{downloadlink,jdbcType=VARCHAR},
+      </if>
+      <if test="versionsize != null" >
+        versionSize = #{versionsize,jdbcType=DECIMAL},
+      </if>
+      <if test="createdby != null" >
+        createdBy = #{createdby,jdbcType=BIGINT},
+      </if>
+      <if test="creationdate != null" >
+        creationDate = #{creationdate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="modifyby != null" >
+        modifyBy = #{modifyby,jdbcType=BIGINT},
+      </if>
+      <if test="modifydate != null" >
+        modifyDate = #{modifydate,jdbcType=TIMESTAMP},
+      </if>
+      <if test="apklocpath != null" >
+        apkLocPath = #{apklocpath,jdbcType=VARCHAR},
+      </if>
+      <if test="apkfilename != null" >
+        apkFileName = #{apkfilename,jdbcType=VARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateAppVersion" parameterType="com.jbit.entity.AppVersion" >
+    update app_version
+    set
+      versionInfo = #{versioninfo,jdbcType=VARCHAR},
+      publishStatus = #{publishstatus,jdbcType=BIGINT},
+      downloadLink = #{downloadlink,jdbcType=VARCHAR},
+      versionSize = #{versionsize,jdbcType=DECIMAL},
+      modifyBy = #{modifyby,jdbcType=BIGINT},
+      modifyDate = now(),
+      apkLocPath = #{apklocpath,jdbcType=VARCHAR},
+      apkFileName = #{apkfilename,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updatedel">
+    update app_version set downloadLink=null,apkLocPath=null,apkFileName=null where id=#{id}
+  </update>
+</mapper>
